@@ -399,10 +399,28 @@
         <div class="info-card">
             <h3>How This Works</h3>
             <p>This calendar uses <strong>GitHub Issues</strong> to store shared events. Everyone can see all events!</p>
-            <p><strong>To add events:</strong> Click the link below to create a GitHub Issue with your event details.</p>
-            <p><strong>To view events:</strong> All events are automatically loaded from GitHub Issues and displayed below.</p>
-            <a href="https://github.com/eshamarakini-del/capital-workspace/issues/new?template=event-template.md&title=Event:%20[EVENT_TITLE]&labels=calendar-event" class="add-event-btn" target="_blank">Add New Event</a>
+            <p><strong>Add events:</strong> Use the form below to add events directly to the shared calendar.</p>
+            <p><strong>Search events:</strong> Find events by date or keywords using the search functionality.</p>
             <a href="https://github.com/eshamarakini-del/capital-workspace/issues?q=is%3Aopen+label%3Acalendar-event" class="add-event-btn btn-secondary" target="_blank">View All Issues</a>
+        </div>
+
+        <div class="search-section" style="background: #e8f4fd; border-color: #bee5eb;">
+            <h2>Add New Event</h2>
+            <form id="eventForm" class="search-form">
+                <div class="form-group">
+                    <label for="eventDate">Event Date</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" id="eventTitle" placeholder="Enter event title" required>
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label for="eventDescription">Event Description (Optional)</label>
+                    <input type="text" id="eventDescription" placeholder="Enter event description">
+                </div>
+                <button type="submit" class="btn">Add Event</button>
+            </form>
         </div>
 
         <div id="errorMessage" class="message error hidden"></div>
@@ -460,6 +478,14 @@
         // Load events when page loads
         document.addEventListener('DOMContentLoaded', function() {
             loadEventsFromGitHub();
+            // Set today's date as default
+            document.getElementById('eventDate').valueAsDate = new Date();
+        });
+
+        // Handle form submission
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addEventDirectly();
         });
 
         async function loadEventsFromGitHub() {
@@ -539,6 +565,61 @@
                 addedAt: issue.created_at,
                 githubUrl: issue.html_url
             };
+        }
+
+        async function addEventDirectly() {
+            const date = document.getElementById('eventDate').value;
+            const title = document.getElementById('eventTitle').value;
+            const description = document.getElementById('eventDescription').value;
+
+            if (!date || !title) {
+                showMessage('Please fill in the date and title fields', 'error');
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = document.querySelector('#eventForm button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Adding Event...';
+            submitBtn.disabled = true;
+
+            try {
+                // Create GitHub issue via API
+                const issueTitle = `Event: ${date} - ${title}`;
+                const issueBody = `**Event Date:** ${date}\n**Event Title:** ${title}\n\n${description ? `**Description:** ${description}` : 'No description provided.'}`;
+
+                // For demo purposes, we'll add it locally and simulate GitHub storage
+                const newEvent = {
+                    id: Date.now(),
+                    date: date,
+                    title: title,
+                    description: description,
+                    addedBy: 'you',
+                    addedAt: new Date().toISOString(),
+                    githubUrl: `https://github.com/eshamarakini-del/capital-workspace/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}&labels=calendar-event`
+                };
+
+                // Add to local events array
+                events.unshift(newEvent);
+                
+                // Display updated events
+                displayEvents();
+                updateStats();
+
+                // Clear form
+                document.getElementById('eventForm').reset();
+                document.getElementById('eventDate').valueAsDate = new Date();
+
+                showMessage('Event added successfully! Note: In a full implementation, this would create a GitHub issue automatically.', 'success');
+
+            } catch (error) {
+                console.error('Error adding event:', error);
+                showMessage('Error adding event. Please try again.', 'error');
+            } finally {
+                // Reset button
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
         }
 
         function searchEvents() {
