@@ -49,27 +49,38 @@
             padding: 30px;
         }
 
-        .auth-section {
-            background: #fff3cd;
-            border: 2px solid #ffeaa7;
+        .info-section {
+            background: #e8f4fd;
+            border: 2px solid #bee5eb;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 30px;
             text-align: center;
         }
 
-        .auth-section.hidden {
-            display: none;
-        }
-
-        .auth-section h3 {
-            color: #856404;
+        .info-section h3 {
+            color: #0c5460;
             margin-bottom: 15px;
         }
 
-        .auth-section p {
-            color: #856404;
-            margin-bottom: 15px;
+        .info-section p {
+            color: #0c5460;
+            margin-bottom: 10px;
+        }
+
+        .github-link {
+            display: inline-block;
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 20px;
+            margin: 10px;
+            transition: background 0.3s;
+        }
+
+        .github-link:hover {
+            background: #555;
         }
 
         .form-section {
@@ -78,11 +89,6 @@
             padding: 25px;
             margin-bottom: 30px;
             border: 2px solid #e1e8ff;
-        }
-
-        .form-section.disabled {
-            opacity: 0.5;
-            pointer-events: none;
         }
 
         .form-section h2 {
@@ -147,17 +153,6 @@
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-github {
-            background: linear-gradient(135deg, #333 0%, #555 100%);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .search-section {
@@ -233,6 +228,12 @@
         .event-description {
             color: #718096;
             line-height: 1.5;
+        }
+
+        .event-meta {
+            color: #a0aec0;
+            font-size: 0.9em;
+            margin-top: 10px;
         }
 
         .no-events {
@@ -315,15 +316,16 @@
     <div class="container">
         <div class="header">
             <h1>Shared Calendar Events</h1>
-            <p>Track and share events with everyone</p>
+            <p>Track and share events with everyone via GitHub Issues</p>
         </div>
 
         <div class="main-content">
-            <div id="authSection" class="auth-section">
-                <h3>🔐 GitHub Authorization Required</h3>
-                <p>To add events to this shared calendar, you need to authorize the app to access your GitHub account.</p>
-                <p><strong>Note:</strong> You can view all events without authorization, but adding events requires GitHub access.</p>
-                <button class="btn btn-github" onclick="authorizeGitHub()">Authorize with GitHub</button>
+            <div class="info-section">
+                <h3>📢 How This Works</h3>
+                <p>This calendar uses <strong>GitHub Issues</strong> to store shared events. Everyone can see all events!</p>
+                <p><strong>To add events:</strong> Click the link below to create a GitHub Issue with your event details.</p>
+                <p><strong>To view events:</strong> All events are automatically loaded from GitHub Issues and displayed below.</p>
+                <a href="https://github.com/eshamarakini-del/capital-workspace/issues/new?template=event-template.md&title=Event:%20[EVENT_TITLE]&labels=calendar-event" class="github-link" target="_blank">➕ Add New Event via GitHub</a>
             </div>
 
             <div id="errorDiv" class="error" style="display: none;"></div>
@@ -344,30 +346,15 @@
                 </div>
             </div>
 
-            <div class="form-section" id="formSection">
-                <h2>Add New Event</h2>
-                <form id="eventForm">
-                    <div class="form-group">
-                        <label for="eventDate">Event Date:</label>
-                        <input type="date" id="eventDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventTitle">Event Title:</label>
-                        <input type="text" id="eventTitle" placeholder="Enter event title" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventDescription">Description (Optional):</label>
-                        <textarea id="eventDescription" placeholder="Enter event description"></textarea>
-                    </div>
-                    <button type="submit" class="btn" id="addBtn">Add Event</button>
-                </form>
-            </div>
-
             <div class="search-section">
                 <h2>Search Events</h2>
                 <div class="form-group">
                     <label for="searchDate">Search by Date:</label>
                     <input type="date" id="searchDate">
+                </div>
+                <div class="form-group">
+                    <label for="searchText">Search by Title/Description:</label>
+                    <input type="text" id="searchText" placeholder="Enter keywords">
                 </div>
                 <button type="button" class="btn" onclick="searchEvents()">Search</button>
                 <button type="button" class="btn" onclick="showAllEvents()" style="margin-left: 10px;">Show All</button>
@@ -376,180 +363,129 @@
             <div class="events-section">
                 <h2>Shared Events</h2>
                 <div id="eventsContainer">
-                    <div class="loading">Loading events...</div>
+                    <div class="loading">Loading events from GitHub...</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // GitHub configuration - REPLACE WITH YOUR VALUES
         const GITHUB_CONFIG = {
             owner: 'eshamarakini-del',
             repo: 'capital-workspace',
-            filePath: 'events.json',
-            branch: 'main'
+            label: 'calendar-event'
         };
 
         let events = [];
-        let githubToken = null;
-
-        // Check for GitHub token in URL (OAuth callback)
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        if (code) {
-            // Clear the URL
-            window.history.replaceState({}, document.title, window.location.pathname);
-            showMessage('GitHub authorization successful! You can now add events.', 'success');
-            document.getElementById('authSection').classList.add('hidden');
-            document.getElementById('formSection').classList.remove('disabled');
-            githubToken = 'dummy-token'; // We'll use the code for authentication
-        }
+        let allIssues = [];
 
         // Load events when page loads
         document.addEventListener('DOMContentLoaded', function() {
             loadEventsFromGitHub();
-            
-            // Check if user is already authorized
-            const savedToken = localStorage.getItem('github_token');
-            if (savedToken) {
-                githubToken = savedToken;
-                document.getElementById('authSection').classList.add('hidden');
-                document.getElementById('formSection').classList.remove('disabled');
-            } else {
-                document.getElementById('formSection').classList.add('disabled');
-            }
         });
-
-        // Handle form submission
-        document.getElementById('eventForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (!githubToken) {
-                showMessage('Please authorize with GitHub first to add events.', 'error');
-                return;
-            }
-            addEvent();
-        });
-
-        function authorizeGitHub() {
-            showMessage('GitHub OAuth is complex for static sites. For now, I\'ll create a simplified version that simulates shared storage.', 'error');
-            // In a real implementation, this would redirect to GitHub OAuth
-            // For demo purposes, we'll simulate authorization
-            setTimeout(() => {
-                githubToken = 'demo-token';
-                localStorage.setItem('github_token', githubToken);
-                document.getElementById('authSection').classList.add('hidden');
-                document.getElementById('formSection').classList.remove('disabled');
-                showMessage('Demo: Authorization simulated! You can now add events.', 'success');
-            }, 1000);
-        }
 
         async function loadEventsFromGitHub() {
             try {
-                // Try to load events from GitHub
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.filePath}`);
+                showMessage('Loading events from GitHub...', 'loading');
                 
-                if (response.status === 404) {
-                    // File doesn't exist yet, start with empty array
-                    events = [];
-                } else if (response.ok) {
-                    const data = await response.json();
-                    const content = atob(data.content);
-                    events = JSON.parse(content);
-                } else {
-                    throw new Error('Failed to load events');
+                // Fetch issues with calendar-event label
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/issues?labels=${GITHUB_CONFIG.label}&state=open`);
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub API Error: ${response.status}`);
                 }
-            } catch (error) {
-                console.error('Error loading events:', error);
-                // Fallback to demo events
-                events = [
-                    {
-                        id: 1,
-                        date: '2024-08-10',
-                        title: 'Team Meeting',
-                        description: 'Monthly team sync meeting'
-                    },
-                    {
-                        id: 2,
-                        date: '2024-08-15',
-                        title: 'Project Deadline',
-                        description: 'Submit final project deliverables'
-                    }
-                ];
-                showMessage('Demo mode: Using sample events. In production, this would load from GitHub.', 'error');
-            }
-            
-            displayEvents();
-            updateStats();
-        }
-
-        async function saveEventsToGitHub() {
-            if (!githubToken) {
-                showMessage('Please authorize with GitHub first.', 'error');
-                return false;
-            }
-
-            try {
-                // This is a simplified version - in production you'd need proper GitHub API calls
-                showMessage('Demo: Event would be saved to GitHub in production.', 'success');
-                return true;
-            } catch (error) {
-                console.error('Error saving to GitHub:', error);
-                showMessage('Error saving to GitHub. Please try again.', 'error');
-                return false;
-            }
-        }
-
-        async function addEvent() {
-            const date = document.getElementById('eventDate').value;
-            const title = document.getElementById('eventTitle').value;
-            const description = document.getElementById('eventDescription').value;
-
-            if (!date || !title) {
-                showMessage('Please fill in the required fields', 'error');
-                return;
-            }
-
-            const event = {
-                id: Date.now(),
-                date: date,
-                title: title,
-                description: description,
-                addedBy: 'user',
-                addedAt: new Date().toISOString()
-            };
-
-            // Add to local array
-            events.push(event);
-            
-            // Try to save to GitHub
-            const saved = await saveEventsToGitHub();
-            
-            if (saved) {
+                
+                const issues = await response.json();
+                allIssues = issues;
+                
+                // Parse issues into events
+                events = issues.map(issue => parseIssueToEvent(issue));
+                
                 displayEvents();
                 updateStats();
-
-                // Clear form
-                document.getElementById('eventForm').reset();
-                document.getElementById('eventDate').valueAsDate = new Date();
+                hideMessages();
                 
-                showMessage('Event added successfully!', 'success');
+            } catch (error) {
+                console.error('Error loading events:', error);
+                showMessage(`Error loading events: ${error.message}. Please check your internet connection.`, 'error');
+                
+                // Show sample events as fallback
+                events = [
+                    {
+                        id: 'sample1',
+                        date: '2024-08-15',
+                        title: 'Sample Event',
+                        description: 'This is a sample event. Real events will appear here once you add them via GitHub Issues.',
+                        addedBy: 'system',
+                        addedAt: new Date().toISOString(),
+                        githubUrl: '#'
+                    }
+                ];
+                
+                displayEvents();
+                updateStats();
             }
+        }
+
+        function parseIssueToEvent(issue) {
+            // Extract date from issue title or body
+            let eventDate = null;
+            let eventTitle = issue.title.replace(/^Event:\s*/, '');
+            
+            // Try to find date in title format: "Event: 2024-08-15 - Meeting"
+            const dateInTitle = issue.title.match(/(\d{4}-\d{2}-\d{2})/);
+            if (dateInTitle) {
+                eventDate = dateInTitle[1];
+                eventTitle = issue.title.replace(/Event:\s*\d{4}-\d{2}-\d{2}\s*-?\s*/, '');
+            }
+            
+            // Try to find date in body
+            if (!eventDate) {
+                const dateInBody = issue.body.match(/Date:\s*(\d{4}-\d{2}-\d{2})/i);
+                if (dateInBody) {
+                    eventDate = dateInBody[1];
+                }
+            }
+            
+            // Default to today if no date found
+            if (!eventDate) {
+                eventDate = new Date().toISOString().split('T')[0];
+            }
+            
+            return {
+                id: issue.id,
+                date: eventDate,
+                title: eventTitle || 'Untitled Event',
+                description: issue.body || '',
+                addedBy: issue.user.login,
+                addedAt: issue.created_at,
+                githubUrl: issue.html_url
+            };
         }
 
         function searchEvents() {
             const searchDate = document.getElementById('searchDate').value;
-            if (!searchDate) {
-                showMessage('Please select a date to search', 'error');
-                return;
+            const searchText = document.getElementById('searchText').value.toLowerCase();
+            
+            let filteredEvents = events;
+            
+            if (searchDate) {
+                filteredEvents = filteredEvents.filter(event => event.date === searchDate);
             }
-
-            const filteredEvents = events.filter(event => event.date === searchDate);
+            
+            if (searchText) {
+                filteredEvents = filteredEvents.filter(event => 
+                    event.title.toLowerCase().includes(searchText) ||
+                    event.description.toLowerCase().includes(searchText)
+                );
+            }
+            
             displayEvents(filteredEvents);
         }
 
         function showAllEvents() {
             document.getElementById('searchDate').value = '';
+            document.getElementById('searchText').value = '';
             displayEvents();
         }
 
@@ -557,7 +493,7 @@
             const container = document.getElementById('eventsContainer');
             
             if (eventsToShow.length === 0) {
-                container.innerHTML = '<div class="no-events">No events found.</div>';
+                container.innerHTML = '<div class="no-events">No events found. <a href="https://github.com/eshamarakini-del/capital-workspace/issues/new?template=event-template.md&title=Event:%20[EVENT_TITLE]&labels=calendar-event" target="_blank">Add your first event!</a></div>';
                 return;
             }
 
@@ -568,7 +504,11 @@
                 <div class="event-item">
                     <div class="event-date">${formatDate(event.date)}</div>
                     <div class="event-title">${event.title}</div>
-                    ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
+                    ${event.description ? `<div class="event-description">${event.description.substring(0, 200)}${event.description.length > 200 ? '...' : ''}</div>` : ''}
+                    <div class="event-meta">
+                        Added by: <strong>${event.addedBy}</strong> | 
+                        <a href="${event.githubUrl}" target="_blank">View on GitHub</a>
+                    </div>
                 </div>
             `).join('');
         }
@@ -614,21 +554,27 @@
                 errorDiv.textContent = message;
                 errorDiv.style.display = 'block';
                 successDiv.style.display = 'none';
-            } else {
+            } else if (type === 'success') {
                 successDiv.textContent = message;
                 successDiv.style.display = 'block';
                 errorDiv.style.display = 'none';
             }
             
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-                successDiv.style.display = 'none';
-            }, 5000);
+            if (type !== 'loading') {
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                    successDiv.style.display = 'none';
+                }, 5000);
+            }
         }
 
-        // Set today's date as default
-        document.getElementById('eventDate').valueAsDate = new Date();
+        function hideMessages() {
+            document.getElementById('errorDiv').style.display = 'none';
+            document.getElementById('successDiv').style.display = 'none';
+        }
+
+        // Refresh events every 30 seconds
+        setInterval(loadEventsFromGitHub, 30000);
     </script>
 </body>
 </html>
