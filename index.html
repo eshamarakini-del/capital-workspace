@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Events Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e1e8ff;
+        }
+
+        .form-section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-section h2::before {
+            content: "➕";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        input[type="date"], input[type="text"], textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ff;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="date"]:focus, input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .search-section {
+            background: #fff5f5;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #ffd6d6;
+        }
+
+        .search-section h2 {
+            color: #c53030;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-section h2::before {
+            content: "🔍";
+            margin-right: 10px;
+        }
+
+        .events-section {
+            background: #f0fff4;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #c6f6d5;
+        }
+
+        .events-section h2 {
+            color: #2f855a;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+        }
+
+        .events-section h2::before {
+            content: "📅";
+            margin-right: 10px;
+        }
+
+        .event-item {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #4facfe;
+            transition: all 0.3s ease;
+        }
+
+        .event-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .event-date {
+            color: #4facfe;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .event-title {
+            color: #2d3748;
+            font-size: 1.2em;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .event-description {
+            color: #718096;
+            line-height: 1.5;
+        }
+
+        .no-events {
+            text-align: center;
+            color: #a0aec0;
+            font-style: italic;
+            padding: 40px;
+        }
+
+        .delete-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            float: right;
+            margin-top: -5px;
+        }
+
+        .delete-btn:hover {
+            background: #ff5252;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4facfe;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Calendar Events</h1>
+            <p>Track and search your important events</p>
+        </div>
+
+        <div class="main-content">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalEvents">0</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="thisMonth">0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="upcoming">0</div>
+                    <div class="stat-label">Upcoming</div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Add New Event</h2>
+                <form id="eventForm">
+                    <div class="form-group">
+                        <label for="eventDate">Event Date:</label>
+                        <input type="date" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTitle">Event Title:</label>
+                        <input type="text" id="eventTitle" placeholder="Enter event title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventDescription">Description (Optional):</label>
+                        <textarea id="eventDescription" placeholder="Enter event description"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add Event</button>
+                </form>
+            </div>
+
+            <div class="search-section">
+                <h2>Search Events</h2>
+                <div class="form-group">
+                    <label for="searchDate">Search by Date:</label>
+                    <input type="date" id="searchDate">
+                </div>
+                <button type="button" class="btn" onclick="searchEvents()">Search</button>
+                <button type="button" class="btn" onclick="showAllEvents()" style="margin-left: 10px;">Show All</button>
+            </div>
+
+            <div class="events-section">
+                <h2>Events</h2>
+                <div id="eventsContainer">
+                    <div class="no-events">No events found. Add some events to get started!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // In-memory storage for events
+        let events = [];
+
+        // Load events when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEvents();
+            displayEvents();
+            updateStats();
+        });
+
+        // Handle form submission
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addEvent();
+        });
+
+        function addEvent() {
+            const date = document.getElementById('eventDate').value;
+            const title = document.getElementById('eventTitle').value;
+            const description = document.getElementById('eventDescription').value;
+
+            if (!date || !title) {
+                alert('Please fill in the required fields');
+                return;
+            }
+
+            const event = {
+                id: Date.now(),
+                date: date,
+                title: title,
+                description: description
+            };
+
+            events.push(event);
+            saveEvents();
+            displayEvents();
+            updateStats();
+
+            // Clear form
+            document.getElementById('eventForm').reset();
+            
+            // Success feedback
+            const btn = document.querySelector('.btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Event Added!';
+            btn.style.background = '#48bb78';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                events = events.filter(event => event.id !== eventId);
+                saveEvents();
+                displayEvents();
+                updateStats();
+            }
+        }
+
+        function searchEvents() {
+            const searchDate = document.getElementById('searchDate').value;
+            if (!searchDate) {
+                alert('Please select a date to search');
+                return;
+            }
+
+            const filteredEvents = events.filter(event => event.date === searchDate);
+            displayEvents(filteredEvents);
+        }
+
+        function showAllEvents() {
+            document.getElementById('searchDate').value = '';
+            displayEvents();
+        }
+
+        function displayEvents(eventsToShow = events) {
+            const container = document.getElementById('eventsContainer');
+            
+            if (eventsToShow.length === 0) {
+                container.innerHTML = '<div class="no-events">No events found.</div>';
+                return;
+            }
+
+            // Sort events by date (newest first)
+            eventsToShow.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            container.innerHTML = eventsToShow.map(event => `
+                <div class="event-item">
+                    <button class="delete-btn" onclick="deleteEvent(${event.id})">Delete</button>
+                    <div class="event-date">${formatDate(event.date)}</div>
+                    <div class="event-title">${event.title}</div>
+                    ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function updateStats() {
+            const totalEvents = events.length;
+            
+            const currentDate = new Date();
+            const currentMonth = currentDate.getMonth();
+            const currentYear = currentDate.getFullYear();
+            
+            const thisMonth = events.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
+            }).length;
+            
+            const upcoming = events.filter(event => {
+                const eventDate = new Date(event.date);
+                return eventDate >= currentDate;
+            }).length;
+
+            document.getElementById('totalEvents').textContent = totalEvents;
+            document.getElementById('thisMonth').textContent = thisMonth;
+            document.getElementById('upcoming').textContent = upcoming;
+        }
+
+        function saveEvents() {
+            // Store events in a global variable for this session
+            window.calendarEvents = events;
+        }
+
+        function loadEvents() {
+            // Load events from global variable if it exists
+            if (window.calendarEvents) {
+                events = window.calendarEvents;
+            }
+        }
+
+        // Set today's date as default
+        document.getElementById('eventDate').valueAsDate = new Date();
+    </script>
+</body>
+</html>
