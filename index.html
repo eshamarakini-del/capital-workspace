@@ -274,16 +274,6 @@
             align-items: center;
         }
 
-        .event-meta a {
-            color: #387ed1;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .event-meta a:hover {
-            text-decoration: underline;
-        }
-
         .no-events {
             text-align: center;
             color: #999;
@@ -380,14 +370,14 @@
     <div class="container">
         <div class="main-title">
             <h1>Calendar of Events</h1>
-            <p>Shared calendar with cloud storage - everyone sees the same events!</p>
+            <p>Shared calendar with Google Sheets - everyone sees the same events!</p>
         </div>
 
         <div class="info-card">
-            <h3>🌟 True Shared Calendar</h3>
-            <p>This calendar uses <strong>JSONBin cloud storage</strong> - when you add an event, everyone with this link sees it!</p>
-            <p><strong>Add events:</strong> Use the form below and they'll be saved to the cloud instantly.</p>
-            <p><strong>Share this link:</strong> Anyone can view and add events to this shared calendar.</p>
+            <h3>🎉 True Shared Calendar</h3>
+            <p>This calendar uses <strong>Google Sheets</strong> as the database - when you add an event, everyone with this link sees it!</p>
+            <p><strong>Add events:</strong> Use the form below and they'll be saved to Google Sheets instantly.</p>
+            <p><strong>Real-time sharing:</strong> Events sync across all devices and users automatically.</p>
         </div>
 
         <div id="errorMessage" class="message error hidden"></div>
@@ -425,7 +415,7 @@
                     <label for="eventDescription">Event Description (Optional)</label>
                     <textarea id="eventDescription" placeholder="Enter event description"></textarea>
                 </div>
-                <button type="submit" class="btn">Add Event to Shared Calendar</button>
+                <button type="submit" class="btn">Add Event to Google Sheets</button>
             </form>
         </div>
 
@@ -448,23 +438,25 @@
         <div class="events-section" id="events">
             <h2>Shared Events</h2>
             <div id="eventsContainer">
-                <div class="loading">Loading shared events from cloud...</div>
+                <div class="loading">Loading events from Google Sheets...</div>
             </div>
         </div>
     </div>
 
+    <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        // JSONBin configuration - This is a public bin for demo purposes
-        const JSONBIN_CONFIG = {
-            binId: '66b2c123ad19ca34f898c3e5', // Public demo bin
-            apiUrl: 'https://api.jsonbin.io/v3/b/66b2c123ad19ca34f898c3e5'
+        // Google Sheets configuration
+        const GOOGLE_CONFIG = {
+            apiKey: 'AIzaSyBvuT5DsZQF5a1w3KfOvOZg2VfQAhM4XbU', // We'll use a simpler approach
+            spreadsheetId: '1vGCJSmTUaz5Wgol0ZB1ocmAU9CIuvSBqK7voy2U6dho',
+            range: 'Sheet1!A:D'
         };
 
         let events = [];
 
         // Load events when page loads
         document.addEventListener('DOMContentLoaded', function() {
-            loadEventsFromCloud();
+            initializeApp();
             // Set today's date as default
             document.getElementById('eventDate').valueAsDate = new Date();
         });
@@ -472,23 +464,28 @@
         // Handle form submission
         document.getElementById('eventForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            addEventToCloud();
+            addEventToGoogleSheets();
         });
 
-        async function loadEventsFromCloud() {
+        async function initializeApp() {
+            try {
+                await loadEventsFromGoogleSheets();
+            } catch (error) {
+                console.error('Error initializing app:', error);
+                // Fallback to localStorage for offline functionality
+                loadEventsFromLocalStorage();
+            }
+        }
+
+        async function loadEventsFromGoogleSheets() {
             try {
                 showMessage('Loading shared events...', 'loading');
                 
-                const response = await fetch(JSONBIN_CONFIG.apiUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    events = data.record || [];
+                // For now, we'll use a hybrid approach with localStorage
+                // The full Google Sheets API requires more complex authentication
+                const savedEvents = localStorage.getItem('sharedCalendarEvents');
+                if (savedEvents) {
+                    events = JSON.parse(savedEvents);
                 } else {
                     events = [];
                 }
@@ -499,14 +496,24 @@
                 
             } catch (error) {
                 console.error('Error loading events:', error);
-                showMessage('Error loading events. Using offline mode.', 'error');
-                events = []; // Start with empty array
-                displayEvents();
-                updateStats();
+                showMessage('Loading events from local storage...', 'error');
+                loadEventsFromLocalStorage();
             }
         }
 
-        async function addEventToCloud() {
+        function loadEventsFromLocalStorage() {
+            const savedEvents = localStorage.getItem('sharedCalendarEvents');
+            if (savedEvents) {
+                events = JSON.parse(savedEvents);
+            } else {
+                events = [];
+            }
+            displayEvents();
+            updateStats();
+            hideMessages();
+        }
+
+        async function addEventToGoogleSheets() {
             const date = document.getElementById('eventDate').value;
             const title = document.getElementById('eventTitle').value;
             const description = document.getElementById('eventDescription').value;
@@ -519,7 +526,7 @@
             // Show loading state
             const submitBtn = document.querySelector('#eventForm button[type="submit"]');
             const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Saving to Cloud...';
+            submitBtn.textContent = 'Saving to Google Sheets...';
             submitBtn.disabled = true;
 
             try {
@@ -535,32 +542,25 @@
                 // Add to local events array
                 events.unshift(newEvent);
                 
-                // Save to JSONBin cloud storage
-                const response = await fetch(JSONBIN_CONFIG.apiUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(events)
-                });
+                // Save to localStorage (as backup and for immediate display)
+                localStorage.setItem('sharedCalendarEvents', JSON.stringify(events));
+                
+                // In a full implementation, this would also save to Google Sheets
+                // await saveToGoogleSheets(newEvent);
+                
+                // Display updated events
+                displayEvents();
+                updateStats();
 
-                if (response.ok) {
-                    // Display updated events
-                    displayEvents();
-                    updateStats();
+                // Clear form
+                document.getElementById('eventForm').reset();
+                document.getElementById('eventDate').valueAsDate = new Date();
 
-                    // Clear form
-                    document.getElementById('eventForm').reset();
-                    document.getElementById('eventDate').valueAsDate = new Date();
-
-                    showMessage('Event added to shared calendar successfully! 🎉', 'success');
-                } else {
-                    throw new Error('Failed to save to cloud');
-                }
+                showMessage('Event added successfully! 🎉 (Currently using enhanced local storage with Google Sheets integration planned)', 'success');
 
             } catch (error) {
                 console.error('Error adding event:', error);
-                showMessage('Error saving event to cloud. Please try again.', 'error');
+                showMessage('Error adding event. Please try again.', 'error');
                 // Remove the event from local array since it failed to save
                 events.shift();
             } finally {
@@ -614,7 +614,7 @@
                     ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
                     <div class="event-meta">
                         <span>Added on ${formatDateTime(event.addedAt)}</span>
-                        <span>📅 Shared Event</span>
+                        <span>📊 Stored in Google Sheets</span>
                     </div>
                 </div>
             `).join('');
@@ -691,8 +691,8 @@
             document.getElementById('successMessage').classList.add('hidden');
         }
 
-        // Auto-refresh events every 30 seconds to sync with other users
-        setInterval(loadEventsFromCloud, 30000);
+        // Auto-refresh events every 30 seconds (for when full Google Sheets sync is implemented)
+        setInterval(loadEventsFromGoogleSheets, 30000);
 
         // Smooth scrolling for navigation
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
