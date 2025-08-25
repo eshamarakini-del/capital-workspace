@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendar of Events</title>
+    <title>Capital Workspace</title>
     <style>
         * {
             margin: 0;
@@ -12,45 +12,51 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             background: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-            font-size: 14px;
+            color: #424242;
+            line-height: 1.5;
+            font-size: 15px;
         }
 
+        /* Header */
         .header {
-            background: white;
-            padding: 20px 0;
+            background: #fff;
             border-bottom: 1px solid #e9ecef;
-            margin-bottom: 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
         .header-content {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 24px;
+            height: 64px;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
 
         .logo {
-            color: #387ed1;
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 600;
+            color: #387ed1;
             text-decoration: none;
+            letter-spacing: -0.5px;
         }
 
         .nav-links {
             display: flex;
-            gap: 30px;
+            gap: 32px;
+            align-items: center;
         }
 
         .nav-links a {
             color: #666;
             text-decoration: none;
             font-size: 14px;
+            font-weight: 500;
             transition: color 0.2s;
         }
 
@@ -58,139 +64,123 @@
             color: #387ed1;
         }
 
+        .add-btn {
+            background: #387ed1;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #2968b8;
+            transform: translateY(-1px);
+            color: white;
+        }
+
+        /* Container */
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 48px 24px;
         }
 
-        .main-title {
-            text-align: center;
-            margin-bottom: 50px;
+        /* Hero Section */
+        .hero {
+            margin-bottom: 48px;
         }
 
-        .main-title h1 {
-            font-size: 48px;
+        .hero h1 {
+            font-size: 36px;
             font-weight: 400;
             color: #333;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
-        .main-title p {
-            font-size: 18px;
+        .hero p {
+            font-size: 16px;
             color: #666;
-            font-weight: 300;
         }
 
-        .info-card {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            text-align: center;
-        }
-
-        .info-card h3 {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 15px;
-            font-weight: 500;
-        }
-
-        .info-card p {
-            color: #666;
-            margin-bottom: 10px;
-            font-size: 15px;
-        }
-
-        .stats-grid {
+        /* Stats */
+        .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
         }
 
         .stat-card {
             background: white;
+            padding: 24px;
             border-radius: 8px;
-            padding: 30px;
-            text-align: center;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
-        .stat-number {
-            font-size: 36px;
+        .stat-value {
+            font-size: 32px;
             font-weight: 300;
             color: #387ed1;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .stat-label {
+            font-size: 13px;
             color: #666;
-            font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .search-section {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        /* Search Bar */
+        .search-container {
+            margin-bottom: 32px;
         }
 
-        .search-section h2 {
-            font-size: 24px;
-            font-weight: 400;
-            color: #333;
-            margin-bottom: 25px;
-        }
-
-        .search-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto auto;
-            gap: 20px;
-            align-items: end;
-        }
-
-        .form-group {
+        .search-wrapper {
             display: flex;
-            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
         }
 
-        .form-group label {
-            color: #666;
-            font-size: 13px;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .form-group input, .form-group textarea {
-            padding: 12px 15px;
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
-            background: white;
             transition: border-color 0.2s;
         }
 
-        .form-group input:focus, .form-group textarea:focus {
+        .search-input:focus {
             outline: none;
             border-color: #387ed1;
         }
 
-        .form-group textarea {
-            min-height: 80px;
-            resize: vertical;
+        .search-date {
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #424242;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
         }
 
-        .btn {
+        .search-date:focus {
+            outline: none;
+            border-color: #387ed1;
+        }
+
+        .search-btn {
+            padding: 12px 24px;
             background: #387ed1;
             color: white;
             border: none;
-            padding: 12px 20px;
             border-radius: 4px;
             font-size: 14px;
             font-weight: 500;
@@ -198,107 +188,292 @@
             transition: all 0.2s;
         }
 
-        .btn:hover {
+        .search-btn:hover {
             background: #2968b8;
             transform: translateY(-1px);
         }
 
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
+        .clear-btn {
+            padding: 12px 24px;
             background: #6c757d;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
-        }
-
-        .events-section {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .events-section h2 {
-            font-size: 24px;
-            font-weight: 400;
-            color: #333;
-            margin-bottom: 25px;
-        }
-
-        .event-item {
-            border-left: 4px solid #387ed1;
-            background: #f8f9fa;
-            padding: 25px;
-            margin-bottom: 20px;
-            border-radius: 0 8px 8px 0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
             transition: all 0.2s;
         }
 
-        .event-item:hover {
-            background: #e9ecef;
-            transform: translateX(5px);
+        .clear-btn:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
         }
 
-        .event-date {
+        /* Outlines Grid */
+        .outlines-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .outline-card {
+            background: white;
+            border-left: 4px solid #387ed1;
+            border-radius: 8px;
+            padding: 24px;
+            transition: all 0.2s;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .outline-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .outline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .outline-date {
+            font-size: 14px;
             color: #387ed1;
             font-weight: 600;
-            font-size: 16px;
-            margin-bottom: 10px;
         }
 
-        .event-title {
-            color: #333;
+        .outline-title {
             font-size: 20px;
             font-weight: 500;
+            color: #333;
             margin-bottom: 8px;
+            line-height: 1.3;
         }
 
-        .event-description {
+        .outline-description {
+            font-size: 14px;
             color: #666;
-            font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 15px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .event-meta {
-            color: #999;
+        .outline-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .outline-meta {
             font-size: 13px;
+            color: #999;
+        }
+
+        .delete-btn {
+            background: transparent;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 24px;
+            border-bottom: 1px solid #eaeaea;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .no-events {
-            text-align: center;
-            color: #999;
-            font-size: 16px;
-            padding: 60px 20px;
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
         }
 
-        .loading {
-            text-align: center;
-            color: #387ed1;
-            font-size: 16px;
-            padding: 40px;
-        }
-
-        .message {
-            padding: 15px 20px;
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border-radius: 4px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            transition: background 0.2s;
         }
 
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f1aeb5;
+        .close-modal:hover {
+            background: #f0f0f0;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #387ed1;
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: #387ed1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #2968b8;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 24px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        /* Messages */
+        .message {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
 
         .message.success {
@@ -307,406 +482,337 @@
             border: 1px solid #b8daff;
         }
 
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         .message.hidden {
             display: none;
         }
 
+        /* Responsive */
         @media (max-width: 768px) {
             .header-content {
-                flex-direction: column;
-                gap: 15px;
+                padding: 0 16px;
             }
 
             .nav-links {
-                gap: 20px;
+                gap: 16px;
             }
 
-            .main-title h1 {
-                font-size: 36px;
+            .nav-links a:not(.add-btn) {
+                display: none;
             }
 
-            .main-title p {
-                font-size: 16px;
-            }
-
-            .search-form {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
             .container {
-                padding: 0 15px;
+                padding: 32px 16px;
             }
 
-            .main-title h1 {
-                font-size: 28px;
+            .hero h1 {
+                font-size: 24px;
             }
 
-            .info-card, .search-section, .events-section {
-                padding: 20px;
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .search-wrapper {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 16px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="header">
+    <header class="header">
         <div class="header-content">
-            <a href="#" class="logo">Calendar of Events</a>
-            <div class="nav-links">
-                <a href="#events">Events</a>
-                <a href="#add">Add Event</a>
+            <a href="#" class="logo">Capital Workspace</a>
+            <nav class="nav-links">
+                <a href="#outlines">Outlines</a>
                 <a href="#search">Search</a>
-            </div>
+                <a href="#" class="add-btn" onclick="openModal()">+ Add Outline</a>
+            </nav>
         </div>
-    </div>
+    </header>
 
     <div class="container">
-        <div class="main-title">
-            <h1>Calendar of Events</h1>
-            <p>Shared calendar with Google Sheets - everyone sees the same events!</p>
+        <div class="hero">
+            <h1>Product Knowledge Base</h1>
+            <p>Team repository for product outlines, specifications, and documentation</p>
         </div>
 
-        <div class="info-card">
-            <h3>🎉 True Shared Calendar</h3>
-            <p>This calendar uses <strong>Google Sheets</strong> as the database - when you add an event, everyone with this link sees it!</p>
-            <p><strong>Add events:</strong> Use the form below and they'll be saved to Google Sheets instantly.</p>
-            <p><strong>Real-time sharing:</strong> Events sync across all devices and users automatically.</p>
-        </div>
-
-        <div id="errorMessage" class="message error hidden"></div>
-        <div id="successMessage" class="message success hidden"></div>
-
-        <div class="stats-grid">
+        <div class="stats">
             <div class="stat-card">
-                <div class="stat-number" id="totalEvents">0</div>
-                <div class="stat-label">Total Events</div>
+                <div class="stat-value" id="totalOutlines">0</div>
+                <div class="stat-label">Total Outlines</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="thisMonth">0</div>
+                <div class="stat-value" id="thisMonth">0</div>
                 <div class="stat-label">This Month</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="upcoming">0</div>
-                <div class="stat-label">Upcoming</div>
+                <div class="stat-value" id="recentUpdates">0</div>
+                <div class="stat-label">Last 7 Days</div>
             </div>
         </div>
 
-        <div class="search-section" style="background: #e8f4fd; border-color: #bee5eb;" id="add">
-            <h2>Add New Event</h2>
-            <form id="eventForm">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                    <div class="form-group">
-                        <label for="eventDate">Event Date</label>
-                        <input type="date" id="eventDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="eventTitle">Event Title</label>
-                        <input type="text" id="eventTitle" placeholder="Enter event title" required>
-                    </div>
-                </div>
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label for="eventDescription">Event Description (Optional)</label>
-                    <textarea id="eventDescription" placeholder="Enter event description"></textarea>
-                </div>
-                <button type="submit" class="btn">Add Event to Google Sheets</button>
-            </form>
-        </div>
-
-        <div class="search-section" id="search">
-            <h2>Search Events</h2>
-            <div class="search-form">
-                <div class="form-group">
-                    <label for="searchDate">Search by Date</label>
-                    <input type="date" id="searchDate">
-                </div>
-                <div class="form-group">
-                    <label for="searchText">Search by Keywords</label>
-                    <input type="text" id="searchText" placeholder="Enter keywords">
-                </div>
-                <button type="button" class="btn" onclick="searchEvents()">Search</button>
-                <button type="button" class="btn btn-secondary" onclick="showAllEvents()">Show All</button>
+        <div class="search-container" id="search">
+            <div class="search-wrapper">
+                <input type="text" class="search-input" id="searchText" placeholder="Search outlines...">
+                <input type="date" class="search-date" id="searchDate">
+                <button class="search-btn" onclick="searchOutlines()">Search</button>
+                <button class="clear-btn" onclick="clearSearch()">Clear</button>
             </div>
         </div>
 
-        <div class="events-section" id="events">
-            <h2>Shared Events</h2>
-            <div id="eventsContainer">
-                <div class="loading">Loading events from Google Sheets...</div>
+        <div class="outlines-grid" id="outlinesContainer">
+            <!-- Outlines will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="outlineModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Product Outline</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="outlineForm">
+                    <div class="form-group">
+                        <label for="outlineDate">Date</label>
+                        <input type="date" id="outlineDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="outlineTitle">Product/Feature Title</label>
+                        <input type="text" id="outlineTitle" placeholder="Enter product or feature name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="outlineDescription">Product Outline</label>
+                        <textarea id="outlineDescription" placeholder="Enter complete product outline, specifications, requirements, implementation notes, technical details, etc." required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Add Outline</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <script src="https://apis.google.com/js/api.js"></script>
+    <!-- Messages -->
+    <div id="successMessage" class="message success hidden"></div>
+    <div id="errorMessage" class="message error hidden"></div>
+
     <script>
-        // Google Sheets configuration
-        const GOOGLE_CONFIG = {
-            apiKey: 'AIzaSyBvuT5DsZQF5a1w3KfOvOZg2VfQAhM4XbU', // We'll use a simpler approach
-            spreadsheetId: '1vGCJSmTUaz5Wgol0ZB1ocmAU9CIuvSBqK7voy2U6dho',
-            range: 'Sheet1!A:D'
-        };
+        let outlines = [];
 
-        let events = [];
-
-        // Load events when page loads
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            // Set today's date as default
-            document.getElementById('eventDate').valueAsDate = new Date();
+            loadOutlines();
+            document.getElementById('outlineDate').valueAsDate = new Date();
         });
 
-        // Handle form submission
-        document.getElementById('eventForm').addEventListener('submit', function(e) {
+        // Form submission
+        document.getElementById('outlineForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            addEventToGoogleSheets();
+            addOutline();
         });
 
-        async function initializeApp() {
-            try {
-                await loadEventsFromGoogleSheets();
-            } catch (error) {
-                console.error('Error initializing app:', error);
-                // Fallback to localStorage for offline functionality
-                loadEventsFromLocalStorage();
-            }
+        // Modal functions
+        function openModal() {
+            document.getElementById('outlineModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
-        async function loadEventsFromGoogleSheets() {
-            try {
-                showMessage('Loading shared events...', 'loading');
-                
-                // For now, we'll use a hybrid approach with localStorage
-                // The full Google Sheets API requires more complex authentication
-                const savedEvents = localStorage.getItem('sharedCalendarEvents');
-                if (savedEvents) {
-                    events = JSON.parse(savedEvents);
-                } else {
-                    events = [];
-                }
-                
-                displayEvents();
-                updateStats();
-                hideMessages();
-                
-            } catch (error) {
-                console.error('Error loading events:', error);
-                showMessage('Loading events from local storage...', 'error');
-                loadEventsFromLocalStorage();
-            }
+        function closeModal() {
+            document.getElementById('outlineModal').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('outlineForm').reset();
+            document.getElementById('outlineDate').valueAsDate = new Date();
         }
 
-        function loadEventsFromLocalStorage() {
-            const savedEvents = localStorage.getItem('sharedCalendarEvents');
-            if (savedEvents) {
-                events = JSON.parse(savedEvents);
+        // Click outside modal to close
+        document.getElementById('outlineModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Load outlines
+        function loadOutlines() {
+            const saved = localStorage.getItem('capitalWorkspaceOutlines');
+            if (saved) {
+                outlines = JSON.parse(saved);
             } else {
-                events = [];
+                outlines = [];
             }
-            displayEvents();
+            displayOutlines();
             updateStats();
-            hideMessages();
         }
 
-        async function addEventToGoogleSheets() {
-            const date = document.getElementById('eventDate').value;
-            const title = document.getElementById('eventTitle').value;
-            const description = document.getElementById('eventDescription').value;
+        // Add outline
+        function addOutline() {
+            const date = document.getElementById('outlineDate').value;
+            const title = document.getElementById('outlineTitle').value;
+            const description = document.getElementById('outlineDescription').value;
 
-            if (!date || !title) {
-                showMessage('Please fill in the date and title fields', 'error');
+            if (!date || !title || !description) {
+                showMessage('Please fill in all fields', 'error');
                 return;
             }
 
-            // Show loading state
-            const submitBtn = document.querySelector('#eventForm button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Saving to Google Sheets...';
-            submitBtn.disabled = true;
+            const newOutline = {
+                id: Date.now(),
+                date: date,
+                title: title,
+                description: description,
+                addedAt: new Date().toISOString()
+            };
 
-            try {
-                const newEvent = {
-                    id: Date.now(),
-                    date: date,
-                    title: title,
-                    description: description,
-                    addedBy: 'user',
-                    addedAt: new Date().toISOString()
-                };
+            outlines.unshift(newOutline);
+            localStorage.setItem('capitalWorkspaceOutlines', JSON.stringify(outlines));
+            
+            displayOutlines();
+            updateStats();
+            closeModal();
+            showMessage('Outline added successfully', 'success');
+        }
 
-                // Add to local events array
-                events.unshift(newEvent);
-                
-                // Save to localStorage (as backup and for immediate display)
-                localStorage.setItem('sharedCalendarEvents', JSON.stringify(events));
-                
-                // In a full implementation, this would also save to Google Sheets
-                // await saveToGoogleSheets(newEvent);
-                
-                // Display updated events
-                displayEvents();
+        // Delete outline
+        function deleteOutline(id) {
+            if (confirm('Are you sure you want to delete this outline?')) {
+                outlines = outlines.filter(o => o.id !== id);
+                localStorage.setItem('capitalWorkspaceOutlines', JSON.stringify(outlines));
+                displayOutlines();
                 updateStats();
-
-                // Clear form
-                document.getElementById('eventForm').reset();
-                document.getElementById('eventDate').valueAsDate = new Date();
-
-                showMessage('Event added successfully! 🎉 (Currently using enhanced local storage with Google Sheets integration planned)', 'success');
-
-            } catch (error) {
-                console.error('Error adding event:', error);
-                showMessage('Error adding event. Please try again.', 'error');
-                // Remove the event from local array since it failed to save
-                events.shift();
-            } finally {
-                // Reset button
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
+                showMessage('Outline deleted', 'success');
             }
         }
 
-        function searchEvents() {
-            const searchDate = document.getElementById('searchDate').value;
+        // Search
+        function searchOutlines() {
             const searchText = document.getElementById('searchText').value.toLowerCase();
+            const searchDate = document.getElementById('searchDate').value;
             
-            let filteredEvents = events;
-            
-            if (searchDate) {
-                filteredEvents = filteredEvents.filter(event => event.date === searchDate);
-            }
+            let filtered = outlines;
             
             if (searchText) {
-                filteredEvents = filteredEvents.filter(event => 
-                    event.title.toLowerCase().includes(searchText) ||
-                    event.description.toLowerCase().includes(searchText)
+                filtered = filtered.filter(o => 
+                    o.title.toLowerCase().includes(searchText) ||
+                    o.description.toLowerCase().includes(searchText)
                 );
             }
             
-            displayEvents(filteredEvents);
-        }
-
-        function showAllEvents() {
-            document.getElementById('searchDate').value = '';
-            document.getElementById('searchText').value = '';
-            displayEvents();
-        }
-
-        function displayEvents(eventsToShow = events) {
-            const container = document.getElementById('eventsContainer');
+            if (searchDate) {
+                filtered = filtered.filter(o => o.date === searchDate);
+            }
             
-            if (eventsToShow.length === 0) {
-                container.innerHTML = '<div class="no-events">No events found. Add the first event to this shared calendar!</div>';
+            displayOutlines(filtered);
+        }
+
+        // Clear search
+        function clearSearch() {
+            document.getElementById('searchText').value = '';
+            document.getElementById('searchDate').value = '';
+            displayOutlines();
+        }
+
+        // Display outlines
+        function displayOutlines(toShow = outlines) {
+            const container = document.getElementById('outlinesContainer');
+            
+            if (toShow.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No outlines yet</h3>
+                        <p>Start by adding your first product outline</p>
+                        <button class="btn-primary" onclick="openModal()">+ Add Outline</button>
+                    </div>
+                `;
                 return;
             }
 
-            // Sort events by date (newest first)
-            eventsToShow.sort((a, b) => new Date(b.date) - new Date(a.date));
+            toShow.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-            container.innerHTML = eventsToShow.map(event => `
-                <div class="event-item">
-                    <div class="event-date">${formatDate(event.date)}</div>
-                    <div class="event-title">${event.title}</div>
-                    ${event.description ? `<div class="event-description">${event.description}</div>` : ''}
-                    <div class="event-meta">
-                        <span>Added on ${formatDateTime(event.addedAt)}</span>
-                        <span>📊 Stored in Google Sheets</span>
+            container.innerHTML = toShow.map(outline => `
+                <div class="outline-card">
+                    <div class="outline-header">
+                        <div style="flex: 1;">
+                            <div class="outline-date">${formatDate(outline.date)}</div>
+                            <div class="outline-title">${outline.title}</div>
+                        </div>
+                    </div>
+                    <div class="outline-description">${outline.description}</div>
+                    <div class="outline-footer">
+                        <span class="outline-meta">Added ${formatRelativeTime(outline.addedAt)}</span>
+                        <button class="delete-btn" onclick="deleteOutline(${outline.id})">Delete</button>
                     </div>
                 </div>
             `).join('');
         }
 
+        // Format date
         function formatDate(dateStr) {
             const date = new Date(dateStr);
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-            };
-            return date.toLocaleDateString('en-US', options);
-        }
-
-        function formatDateTime(dateStr) {
-            const date = new Date(dateStr);
             return date.toLocaleDateString('en-US', { 
-                year: 'numeric', 
                 month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+                day: 'numeric', 
+                year: 'numeric' 
             });
         }
 
+        // Format relative time
+        function formatRelativeTime(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (days === 0) return 'today';
+            if (days === 1) return 'yesterday';
+            if (days < 7) return `${days} days ago`;
+            if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+            return formatDate(dateStr);
+        }
+
+        // Update stats
         function updateStats() {
-            const totalEvents = events.length;
+            document.getElementById('totalOutlines').textContent = outlines.length;
             
-            const currentDate = new Date();
-            const currentMonth = currentDate.getMonth();
-            const currentYear = currentDate.getFullYear();
-            
-            const thisMonth = events.filter(event => {
-                const eventDate = new Date(event.date);
-                return eventDate.getMonth() === currentMonth && eventDate.getFullYear() === currentYear;
+            const now = new Date();
+            const thisMonth = outlines.filter(o => {
+                const date = new Date(o.date);
+                return date.getMonth() === now.getMonth() && 
+                       date.getFullYear() === now.getFullYear();
             }).length;
             
-            const upcoming = events.filter(event => {
-                const eventDate = new Date(event.date);
-                return eventDate >= currentDate;
+            const recent = outlines.filter(o => {
+                const date = new Date(o.addedAt);
+                const diff = now - date;
+                return diff < (7 * 24 * 60 * 60 * 1000);
             }).length;
-
-            document.getElementById('totalEvents').textContent = totalEvents;
+            
             document.getElementById('thisMonth').textContent = thisMonth;
-            document.getElementById('upcoming').textContent = upcoming;
+            document.getElementById('recentUpdates').textContent = recent;
         }
 
-        function showMessage(message, type) {
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
-            
-            // Hide all messages first
-            errorMessage.classList.add('hidden');
-            successMessage.classList.add('hidden');
-            
-            if (type === 'error') {
-                errorMessage.textContent = message;
-                errorMessage.classList.remove('hidden');
-            } else if (type === 'success') {
-                successMessage.textContent = message;
-                successMessage.classList.remove('hidden');
-            }
-            
-            // Auto-hide after 5 seconds (except loading)
-            if (type !== 'loading') {
-                setTimeout(hideMessages, 5000);
-            }
+        // Show message
+        function showMessage(text, type) {
+            const msg = document.getElementById(type + 'Message');
+            msg.textContent = text;
+            msg.classList.remove('hidden');
+            setTimeout(() => msg.classList.add('hidden'), 3000);
         }
 
-        function hideMessages() {
-            document.getElementById('errorMessage').classList.add('hidden');
-            document.getElementById('successMessage').classList.add('hidden');
-        }
-
-        // Auto-refresh events every 30 seconds (for when full Google Sheets sync is implemented)
-        setInterval(loadEventsFromGoogleSheets, 30000);
-
-        // Smooth scrolling for navigation
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
+        // Auto-refresh
+        setInterval(loadOutlines, 30000);
     </script>
 </body>
 </html>
